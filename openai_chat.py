@@ -7,7 +7,7 @@ def num_tokens_from_messages(messages, model='gpt-4o'):
   """Returns the number of tokens used by a list of messages.
   Copied with minor changes from: https://platform.openai.com/docs/guides/chat/managing-tokens """
   try:
-      encoding = tiktoken.encoding_for_model(model)
+      encoding = tiktoken.get_encoding("cl100k_base")  
       num_tokens = 0
       for message in messages:
           num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
@@ -27,11 +27,13 @@ class OpenAiManager:
     def __init__(self):
         self.chat_history = [] # Stores the entire conversation
         try:
-            self.client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+            api_key = os.environ.get("OPENAI_API_KEY")
         except TypeError:
             exit("Ooops! You forgot to set OPENAI_API_KEY in your environment!")
 
-    # Asks a question with no chat history
+        self.client = OpenAI(api_key=api_key)  
+
+    # Asks a question with no chat historyund 
     def chat(self, prompt=""):
         if not prompt:
             print("Didn't receive input!")
